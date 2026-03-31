@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Shipping Factory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            cream: '#FAFAF8',
+            card: '#FFFFFF',
+            border: '#E5E5E0',
+            accent: '#D97757',
+            txt: '#1a1a1a',
+            muted: '#6b6b6b',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: auto; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #FAFAF8;
+      color: #1a1a1a;
+      margin: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* Language pill */
+    .lang-pill {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      display: flex;
+      background: #FFFFFF;
+      border: 1px solid #E5E5E0;
+      border-radius: 999px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .lang-btn {
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: #6b6b6b;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .lang-btn.active {
+      background: #D97757;
+      color: #FFFFFF;
+    }
+
+    /* Pipeline connector lines */
+    .pipeline-connector {
+      width: 40px;
+      height: 2px;
+      background: #94a3b8;
+      flex-shrink: 0;
+      align-self: center;
+      margin-top: -20px;
+    }
+    @media (max-width: 768px) {
+      .pipeline-connector { display: none; }
+    }
+
+    /* Hill chart animation */
+    @keyframes dash {
+      to { stroke-dashoffset: -24; }
+    }
+    .hill-path {
+      animation: dash 2s linear infinite;
+    }
+
+    /* Chat bubble */
+    .chat-bubble {
+      background: #f5f5f0;
+      border-radius: 12px 12px 12px 4px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #6b6b6b;
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    /* Stage colors */
+    .stage-bench { border-top: 3px solid #f59e0b; }
+    .stage-think { border-top: 3px solid #8b5cf6; }
+    .stage-shape { border-top: 3px solid #D97757; }
+    .stage-build { border-top: 3px solid #3b82f6; }
+    .stage-verify { border-top: 3px solid #10b981; }
+    .stage-ship { border-top: 3px solid #ef4444; }
+
+    /* Dot colors for hill chart */
+    .dot-bench { fill: #f59e0b; }
+    .dot-think { fill: #8b5cf6; }
+    .dot-shape { fill: #D97757; }
+    .dot-build { fill: #3b82f6; }
+    .dot-verify { fill: #10b981; }
+    .dot-ship { fill: #ef4444; }
+
+    /* Model badge */
+    .model-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .badge-opus { background: #f3e8ff; color: #7c3aed; }
+    .badge-codex { background: #e0f2fe; color: #0369a1; }
+    .badge-gemini { background: #fef3c7; color: #b45309; }
+
+    /* Kanban */
+    .kanban-card {
+      background: #FFFFFF;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 13px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      margin-bottom: 8px;
+    }
+    .kanban-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    /* Case study accent borders */
+    .case-green { border-left: 4px solid #10b981; }
+    .case-blue { border-left: 4px solid #3b82f6; }
+    .case-amber { border-left: 4px solid #f59e0b; }
+
+    /* Badge */
+    .mvp-badge {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Section divider */
+    .section-divider {
+      width: 60px;
+      height: 3px;
+      background: #D97757;
+      border-radius: 2px;
+    }
+
+    /* Timeline day card */
+    .timeline-day {
+      background: #FFFFFF;
+      border: 1px solid #E5E5E0;
+      border-radius: 10px;
+      padding: 16px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Mini pipeline for case studies */
+    .mini-pipe-step {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .mini-pipe-arrow {
+      color: #94a3b8;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Language Switcher -->
+  <div class="lang-pill">
+    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" id="btn-cz" onclick="setLang('cz')">CZ</button>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 1: HERO -->
+  <!-- ============================================================ -->
+  <section class="min-h-screen flex flex-col items-center justify-center px-6 text-center">
+    <div class="reveal">
+      <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight">
+        <span data-i18n="hero.title">The Shipping Factory</span><span class="text-accent ml-1">.</span>
+      </h1>
+    </div>
+    <div class="reveal reveal-delay-1 mt-6">
+      <p class="text-xl md:text-2xl text-muted max-w-2xl" data-i18n="hero.subtitle">
+        One person. Seven AI teammates. Shipping like a studio.
+      </p>
+    </div>
+
+    <!-- Stat boxes -->
+    <div class="reveal reveal-delay-2 flex flex-wrap gap-6 mt-12 justify-center">
+      <div class="bg-card border border-border rounded-xl px-8 py-6 text-center min-w-[140px]">
+        <div class="font-mono text-4xl font-bold text-accent">7</div>
+        <div class="text-sm text-muted mt-1 font-medium" data-i18n="hero.agents">Agents</div>
+      </div>
+      <div class="bg-card border border-border rounded-xl px-8 py-6 text-center min-w-[140px]">
+        <div class="font-mono text-4xl font-bold text-accent">33</div>
+        <div class="text-sm text-muted mt-1 font-medium" data-i18n="hero.skills">Skills</div>
+      </div>
+      <div class="bg-card border border-border rounded-xl px-8 py-6 text-center min-w-[140px]">
+        <div class="font-mono text-4xl font-bold text-accent">5</div>
+        <div class="text-sm text-muted mt-1 font-medium" data-i18n="hero.projects">Projects</div>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-3 mt-10 max-w-xl">
+      <p class="text-base text-muted leading-relaxed" data-i18n="hero.explainer">
+        A solo developer workflow where AI agents handle coding, testing, reviewing, and deploying — so one person can ship like a full team.
+      </p>
+    </div>
+
+    <div class="mt-16 animate-bounce text-muted">
+      <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 2: THE LOOP -->
+  <!-- ============================================================ -->
+  <section class="max-w-7xl mx-auto px-6 py-24">
+    <div class="reveal text-center mb-16">
+      <div class="section-divider mx-auto mb-4"></div>
+      <h2 class="text-3xl md:text-4xl font-bold" data-i18n="loop.title">The Loop</h2>
+      <p class="text-muted mt-3 text-lg" data-i18n="loop.subtitle">Every feature follows the same six-stage pipeline.</p>
+    </div>
+
+    <!-- 2A: Pipeline Flow -->
+    <div class="flex flex-wrap md:flex-nowrap items-start justify-center gap-0 md:gap-0 mb-20">
+      <!-- Bench -->
+      <div class="reveal reveal-delay-1 bg-card border border-border rounded-xl p-5 stage-bench w-full md:w-[160px] flex-shrink-0">
+        <div class="text-2xl mb-2">💡</div>
+        <div class="font-semibold text-sm" data-i18n="pipe.bench.name">Bench</div>
+        <div class="text-xs text-muted mt-1" data-i18n="pipe.bench.tag">Park the idea</div>
+        <div class="chat-bubble" data-i18n="pipe.bench.prompt">"Add podcast search filtering"</div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <!-- Think -->
+      <div class="reveal reveal-delay-2 bg-card border border-border rounded-xl p-5 stage-think w-full md:w-[160px] flex-shrink-0">
+        <div class="text-2xl mb-2">🧠</div>
+        <div class="font-semibold text-sm" data-i18n="pipe.think.name">Think</div>
+        <div class="text-xs text-muted mt-1" data-i18n="pipe.think.tag">Understand before building</div>
+        <div class="chat-bubble" data-i18n="pipe.think.prompt">"What if users filter by topic?"</div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <!-- Shape -->
+      <div class="reveal reveal-delay-3 bg-card border border-border rounded-xl p-5 stage-shape w-full md:w-[160px] flex-shrink-0">
+        <div class="text-2xl mb-2">✏️</div>
+        <div class="font-semibold text-sm" data-i18n="pipe.shape.name">Shape</div>
+        <div class="text-xs text-muted mt-1" data-i18n="pipe.shape.tag">Design the rough shape</div>
+        <div class="chat-bubble" data-i18n="pipe.shape.prompt">"Shape this — 2 hours max"</div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <!-- Build -->
+      <div class="reveal reveal-delay-4 bg-card border border-border rounded-xl p-5 stage-build w-full md:w-[160px] flex-shrink-0">
+        <div class="text-2xl mb-2">🔨</div>
+        <div class="font-semibold text-sm" data-i18n="pipe.build.name">Build</div>
+        <div class="text-xs text-muted mt-1" data-i18n="pipe.build.tag">AI agents execute the plan</div>
+        <div class="chat-bubble" data-i18n="pipe.build.prompt">"Builder writes, tests, commits"</div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <!-- Verify -->
+      <div class="reveal reveal-delay-5 bg-card border border-border rounded-xl p-5 stage-verify w-full md:w-[160px] flex-shrink-0">
+        <div class="text-2xl mb-2">✅</div>
+        <div class="font-semibold text-sm" data-i18n="pipe.verify.name">Verify</div>
+        <div class="text-xs text-muted mt-1" data-i18n="pipe.verify.tag">Quality gates before shipping</div>
+        <div class="chat-bubble" data-i18n="pipe.verify.prompt">"Reviewer catches bugs. Screenshots every page."</div>
+      </div>
+      <div class="pipeline-connector"></div>
+      <!-- Ship -->
+      <div class="reveal bg-card border border-border rounded-xl p-5 stage-ship w-full md:w-[160px] flex-shrink-0" style="transition-delay:0.6s">
+        <div class="text-2xl mb-2">🚀</div>
+        <div class="font-semibold text-sm" data-i18n="pipe.ship.name">Ship</div>
+        <div class="text-xs text-muted mt-1" data-i18n="pipe.ship.tag">One command to deploy</div>
+        <div class="chat-bubble" data-i18n="pipe.ship.prompt">"/ship — and it's live"</div>
+      </div>
+    </div>
+
+    <!-- 2B: Hill Chart -->
+    <div class="reveal max-w-4xl mx-auto">
+      <h3 class="text-xl font-semibold text-center mb-6" data-i18n="loop.hill.title">How a feature moves through the pipeline</h3>
+      <svg viewBox="0 0 900 300" class="w-full" xmlns="http://www.w3.org/2000/svg">
+        <!-- Grid lines -->
+        <line x1="450" y1="30" x2="450" y2="270" stroke="#E5E5E0" stroke-width="1" stroke-dasharray="4 4" />
+
+        <!-- Hill curve -->
+        <path id="hillCurve" d="" fill="none" stroke="#D97757" stroke-width="3" stroke-dasharray="8 4" stroke-linecap="round" opacity="0.67" class="hill-path" />
+
+        <!-- Dots -->
+        <circle cx="75" cy="0" r="8" class="dot-bench" />
+        <circle cx="225" cy="0" r="8" class="dot-think" />
+        <circle cx="375" cy="0" r="8" class="dot-shape" />
+        <circle cx="525" cy="0" r="8" class="dot-build" />
+        <circle cx="700" cy="0" r="8" class="dot-verify" />
+        <circle cx="825" cy="0" r="8" class="dot-ship" />
+
+        <!-- Dot labels -->
+        <text x="75" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.bench.name">Bench</text>
+        <text x="225" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.think.name">Think</text>
+        <text x="375" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.shape.name">Shape</text>
+        <text x="525" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.build.name">Build</text>
+        <text x="700" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.verify.name">Verify</text>
+        <text x="825" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.ship.name">Ship</text>
+
+        <!-- Footer labels -->
+        <text x="225" y="290" text-anchor="middle" font-size="14" font-weight="500" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="loop.hill.left">Figuring things out</text>
+        <text x="675" y="290" text-anchor="middle" font-size="14" font-weight="500" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="loop.hill.right">Making it happen</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 3: THE TEAM -->
+  <!-- ============================================================ -->
+  <section class="max-w-7xl mx-auto px-6 py-24">
+    <div class="reveal text-center mb-16">
+      <div class="section-divider mx-auto mb-4"></div>
+      <h2 class="text-3xl md:text-4xl font-bold" data-i18n="team.title">The Team</h2>
+      <p class="text-muted mt-3 text-lg" data-i18n="team.subtitle">Seven specialized AI agents, each with a clear job.</p>
+    </div>
+
+    <!-- 3A: Agent Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+      <!-- Orchestrator -->
+      <div class="reveal bg-card border border-border rounded-xl p-5 relative">
+        <div class="text-3xl mb-3">🎯</div>
+        <div class="font-semibold" data-i18n="agent.orchestrator.name">Orchestrator</div>
+        <div class="text-sm text-muted mt-1" data-i18n="agent.orchestrator.role">Air traffic control — decides who works on what</div>
+        <div class="absolute top-4 right-4"><span class="model-badge badge-opus">Claude Opus</span></div>
+      </div>
+      <!-- Builder -->
+      <div class="reveal reveal-delay-1 bg-card border border-border rounded-xl p-5 relative">
+        <div class="text-3xl mb-3">🔨</div>
+        <div class="font-semibold" data-i18n="agent.builder.name">Builder</div>
+        <div class="text-sm text-muted mt-1" data-i18n="agent.builder.role">The coder — writes, tests, commits</div>
+        <div class="absolute top-4 right-4"><span class="model-badge badge-opus">Claude Opus</span></div>
+      </div>
+      <!-- Reviewer -->
+      <div class="reveal reveal-delay-2 bg-card border border-border rounded-xl p-5 relative">
+        <div class="text-3xl mb-3">🔍</div>
+        <div class="font-semibold" data-i18n="agent.reviewer.name">Reviewer</div>
+        <div class="text-sm text-muted mt-1" data-i18n="agent.reviewer.role">Quality control — catches bugs before they ship</div>
+        <div class="absolute top-4 right-4"><span class="model-badge badge-opus">Claude Opus</span></div>
+      </div>
+      <!-- Researcher -->
+      <div class="reveal reveal-delay-3 bg-card border border-border rounded-xl p-5 relative">
+        <div class="text-3xl mb-3">📚</div>
+        <div class="font-semibold" data-i18n="agent.researcher.name">Researcher</div>
+        <div class="text-sm text-muted mt-1" data-i18n="agent.researcher.role">Librarian — finds answers from the web and docs</div>
+        <div class="absolute top-4 right-4"><span class="model-badge badge-opus">Claude Opus</span></div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-4xl mx-auto mb-10">
+      <!-- Reality-Checker -->
+      <div class="reveal bg-card border border-border rounded-xl p-5 relative">
+        <div class="text-3xl mb-3">👁️</div>
+        <div class="font-semibold" data-i18n="agent.reality.name">Reality-Checker</div>
+        <div class="text-sm text-muted mt-1" data-i18n="agent.reality.role">Fresh eyes — screenshots every page to spot issues</div>
+        <div class="absolute top-4 right-4"><span class="model-badge badge-opus">Claude Opus</span></div>
+      </div>
+      <!-- Codex Challenger -->
+      <div class="reveal reveal-delay-1 bg-card border border-border rounded-xl p-5 relative">
+        <div class="text-3xl mb-3">⚡</div>
+        <div class="font-semibold" data-i18n="agent.codex.name">Codex Challenger</div>
+        <div class="text-sm text-muted mt-1" data-i18n="agent.codex.role">Devil's advocate — challenges the code</div>
+        <div class="absolute top-4 right-4"><span class="model-badge badge-codex">OpenAI Codex</span></div>
+      </div>
+      <!-- Gemini Challenger -->
+      <div class="reveal reveal-delay-2 bg-card border border-border rounded-xl p-5 relative">
+        <div class="text-3xl mb-3">🎨</div>
+        <div class="font-semibold" data-i18n="agent.gemini.name">Gemini Challenger</div>
+        <div class="text-sm text-muted mt-1" data-i18n="agent.gemini.role">Devil's advocate — challenges the design</div>
+        <div class="absolute top-4 right-4"><span class="model-badge badge-gemini">Google Gemini</span></div>
+      </div>
+    </div>
+
+    <!-- Callout -->
+    <div class="reveal max-w-2xl mx-auto bg-card border border-border rounded-xl p-6 text-center mb-20">
+      <p class="text-muted text-sm italic" data-i18n="team.callout">Different AI models are good at different things. Like getting a second opinion from a different doctor.</p>
+    </div>
+
+    <!-- 3B: Mini Board -->
+    <div class="reveal">
+      <h3 class="text-xl font-semibold text-center mb-8" data-i18n="team.board.title">Live Board</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+        <!-- Bench column -->
+        <div class="bg-cream rounded-xl p-4">
+          <div class="flex items-center mb-4">
+            <span class="kanban-dot" style="background:#f59e0b"></span>
+            <span class="text-sm font-semibold" data-i18n="board.bench">Bench</span>
+            <span class="text-xs text-muted ml-auto font-mono">3</span>
+          </div>
+          <div class="kanban-card" data-i18n="board.card.1">Dark mode toggle</div>
+          <div class="kanban-card" data-i18n="board.card.2">Email digest feature</div>
+          <div class="kanban-card" data-i18n="board.card.3">Analytics dashboard</div>
+        </div>
+        <!-- Building column -->
+        <div class="bg-cream rounded-xl p-4">
+          <div class="flex items-center mb-4">
+            <span class="kanban-dot" style="background:#3b82f6"></span>
+            <span class="text-sm font-semibold" data-i18n="board.building">Building</span>
+            <span class="text-xs text-muted ml-auto font-mono">2</span>
+          </div>
+          <div class="kanban-card" data-i18n="board.card.4">Add search filters</div>
+          <div class="kanban-card" data-i18n="board.card.5">Feed pagination</div>
+        </div>
+        <!-- Review column -->
+        <div class="bg-cream rounded-xl p-4">
+          <div class="flex items-center mb-4">
+            <span class="kanban-dot" style="background:#10b981"></span>
+            <span class="text-sm font-semibold" data-i18n="board.review">Review</span>
+            <span class="text-xs text-muted ml-auto font-mono">1</span>
+          </div>
+          <div class="kanban-card" data-i18n="board.card.6">Fix mobile layout</div>
+        </div>
+        <!-- Done column -->
+        <div class="bg-cream rounded-xl p-4">
+          <div class="flex items-center mb-4">
+            <span class="kanban-dot" style="background:#ef4444"></span>
+            <span class="text-sm font-semibold" data-i18n="board.done">Done</span>
+            <span class="text-xs text-muted ml-auto font-mono">4</span>
+          </div>
+          <div class="kanban-card" data-i18n="board.card.7">Podcast feed parser</div>
+          <div class="kanban-card" data-i18n="board.card.8">Auth system</div>
+          <div class="kanban-card" data-i18n="board.card.9">RSS integration</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 4: THE OUTPUT -->
+  <!-- ============================================================ -->
+  <section class="max-w-7xl mx-auto px-6 py-24">
+    <div class="reveal text-center mb-16">
+      <div class="section-divider mx-auto mb-4"></div>
+      <h2 class="text-3xl md:text-4xl font-bold" data-i18n="output.title">The Output</h2>
+      <p class="text-muted mt-3 text-lg" data-i18n="output.subtitle">Five products, one person, one factory.</p>
+    </div>
+
+    <!-- 4A: Project Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-20">
+      <div class="reveal bg-card border border-border rounded-xl p-5">
+        <div class="text-lg font-bold">PodNews</div>
+        <div class="text-sm text-muted mt-1" data-i18n="proj.podnews.desc">Podcast news aggregator</div>
+        <div class="mt-3 text-sm font-medium" style="color:#10b981" data-i18n="proj.podnews.status">🟢 Active</div>
+      </div>
+      <div class="reveal reveal-delay-1 bg-card border border-border rounded-xl p-5">
+        <div class="text-lg font-bold">Fairy Tales</div>
+        <div class="text-sm text-muted mt-1" data-i18n="proj.fairy.desc">AI stories for kids</div>
+        <div class="mt-3 text-sm font-medium" style="color:#f59e0b" data-i18n="proj.fairy.status">🟡 MVP in progress</div>
+      </div>
+      <div class="reveal reveal-delay-2 bg-card border border-border rounded-xl p-5">
+        <div class="text-lg font-bold">Mountain Guides</div>
+        <div class="text-sm text-muted mt-1" data-i18n="proj.mountain.desc">Mountain guides platform</div>
+        <div class="mt-3 text-sm font-medium text-muted" data-i18n="proj.mountain.status">⏳ Queued</div>
+      </div>
+      <div class="reveal reveal-delay-3 bg-card border border-border rounded-xl p-5">
+        <div class="text-lg font-bold">Etsy Poster</div>
+        <div class="text-sm text-muted mt-1" data-i18n="proj.etsy.desc">Etsy poster store</div>
+        <div class="mt-3 text-sm font-medium text-muted" data-i18n="proj.etsy.status">⏳ Queued</div>
+      </div>
+      <div class="reveal reveal-delay-4 bg-card border border-border rounded-xl p-5">
+        <div class="text-lg font-bold">Afrand Ceramics</div>
+        <div class="text-sm text-muted mt-1" data-i18n="proj.afrand.desc">Ceramics website</div>
+        <div class="mt-3 text-sm font-medium" style="color:#10b981" data-i18n="proj.afrand.status">✅ Completed</div>
+      </div>
+    </div>
+
+    <!-- 4B: Weekly Timeline -->
+    <div class="reveal">
+      <h3 class="text-xl font-semibold text-center mb-8" data-i18n="output.week.title">A Week in the Factory</h3>
+      <div class="flex flex-col md:flex-row gap-4 max-w-5xl mx-auto">
+        <div class="timeline-day">
+          <div class="font-semibold text-sm mb-2" data-i18n="week.mon.day">Monday</div>
+          <div class="text-sm text-muted" data-i18n="week.mon.text">Bench 3 ideas. Triage backlog. Shape 1 feature for the week.</div>
+        </div>
+        <div class="timeline-day">
+          <div class="font-semibold text-sm mb-2" data-i18n="week.tue.day">Tuesday - Wednesday</div>
+          <div class="text-sm text-muted" data-i18n="week.tue.text">Builder executes the shaped plan. Reviewer catches 2 bugs mid-build.</div>
+        </div>
+        <div class="timeline-day">
+          <div class="font-semibold text-sm mb-2" data-i18n="week.thu.day">Thursday</div>
+          <div class="text-sm text-muted" data-i18n="week.thu.text">Ship v2.1 to production. Retro captures learnings to the vault.</div>
+        </div>
+        <div class="timeline-day">
+          <div class="font-semibold text-sm mb-2" data-i18n="week.fri.day">Friday</div>
+          <div class="text-sm text-muted" data-i18n="week.fri.text">Research next feature. Capture insights to the vault. Bench new ideas.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 5: WHAT COULD WE BUILD? -->
+  <!-- ============================================================ -->
+  <section class="max-w-7xl mx-auto px-6 py-24">
+    <div class="reveal text-center mb-16">
+      <div class="section-divider mx-auto mb-4"></div>
+      <h2 class="text-3xl md:text-4xl font-bold" data-i18n="build.title">What Could We Build?</h2>
+    </div>
+
+    <!-- 5A: Factory Spins Up Fast -->
+    <div class="reveal max-w-4xl mx-auto mb-20">
+      <h3 class="text-xl font-semibold text-center mb-8" data-i18n="build.fast.title">The Factory Spins Up Fast</h3>
+      <div class="flex flex-col md:flex-row items-center gap-4 justify-center mb-8">
+        <div class="bg-card border border-border rounded-xl p-5 text-center flex-1 max-w-[220px]">
+          <div class="text-2xl mb-2">📋</div>
+          <div class="font-semibold text-sm" data-i18n="build.fast.step1">Define the problem</div>
+          <div class="text-xs text-muted mt-1 font-mono" data-i18n="build.fast.time1">Day 1</div>
+        </div>
+        <div class="text-muted text-2xl hidden md:block">&rarr;</div>
+        <div class="bg-card border border-border rounded-xl p-5 text-center flex-1 max-w-[220px]">
+          <div class="text-2xl mb-2">🏭</div>
+          <div class="font-semibold text-sm" data-i18n="build.fast.step2">Factory kicks in</div>
+          <div class="text-xs text-muted mt-1 font-mono" data-i18n="build.fast.time2">Week 1-2</div>
+        </div>
+        <div class="text-muted text-2xl hidden md:block">&rarr;</div>
+        <div class="bg-card border border-border rounded-xl p-5 text-center flex-1 max-w-[220px]">
+          <div class="text-2xl mb-2">🚀</div>
+          <div class="font-semibold text-sm" data-i18n="build.fast.step3">MVP in weeks</div>
+          <div class="text-xs text-muted mt-1 font-mono" data-i18n="build.fast.time3">Week 3-4</div>
+        </div>
+      </div>
+      <div class="bg-card border border-border rounded-xl p-6 text-center">
+        <p class="text-muted italic text-sm" data-i18n="build.fast.callout">The factory isn't tied to any one product. New project = new raw material, same machinery.</p>
+      </div>
+    </div>
+
+    <!-- 5B: Three Prague Case Studies -->
+    <div class="space-y-8 mb-20">
+
+      <!-- Card 1: RemeslnikFlow -->
+      <div class="reveal bg-card border border-border rounded-xl p-8 case-green">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <h4 class="text-xl font-bold">ŘemeslníkFlow</h4>
+          <span class="text-sm text-muted">(TradesFlow)</span>
+          <span class="mvp-badge" style="background:#d1fae5;color:#059669" data-i18n="case.trades.badge">6-week MVP</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8">
+          <div>
+            <div class="text-sm font-semibold text-muted uppercase tracking-wide mb-2" data-i18n="case.label.problem">Problem</div>
+            <p class="text-sm mb-4" data-i18n="case.trades.problem">Trades businesses track jobs on paper and WhatsApp. No pipeline, no follow-ups, lost revenue.</p>
+            <div class="text-sm font-semibold text-muted uppercase tracking-wide mb-2" data-i18n="case.label.product">Product</div>
+            <p class="text-sm mb-4" data-i18n="case.trades.product">Mobile-first job pipeline app for tradespeople.</p>
+            <!-- Mini pipeline -->
+            <div class="flex flex-wrap items-center gap-2 mt-2">
+              <span class="mini-pipe-step" style="background:#d1fae5;color:#059669" data-i18n="case.trades.p1">Leads</span>
+              <span class="mini-pipe-arrow">&rarr;</span>
+              <span class="mini-pipe-step" style="background:#d1fae5;color:#059669" data-i18n="case.trades.p2">Quote</span>
+              <span class="mini-pipe-arrow">&rarr;</span>
+              <span class="mini-pipe-step" style="background:#d1fae5;color:#059669" data-i18n="case.trades.p3">Schedule</span>
+              <span class="mini-pipe-arrow">&rarr;</span>
+              <span class="mini-pipe-step" style="background:#d1fae5;color:#059669" data-i18n="case.trades.p4">Complete</span>
+              <span class="mini-pipe-arrow">&rarr;</span>
+              <span class="mini-pipe-step" style="background:#d1fae5;color:#059669" data-i18n="case.trades.p5">Follow-up</span>
+            </div>
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-muted uppercase tracking-wide mb-2" data-i18n="case.label.team">Team Split</div>
+            <div class="text-sm mb-1"><span class="mr-2">🔨</span><span data-i18n="case.trades.dev">Dev builds the app</span></div>
+            <div class="text-sm mb-4"><span class="mr-2">🤝</span><span data-i18n="case.trades.sales">Sales walks into businesses</span></div>
+            <div class="text-sm font-semibold text-muted uppercase tracking-wide mb-2" data-i18n="case.label.scale">Scale</div>
+            <p class="font-mono text-sm font-semibold" data-i18n="case.trades.scale">15,000+ tradespeople in Prague &middot; 500 CZK/month</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: MistniMenu -->
+      <div class="reveal bg-card border border-border rounded-xl p-8 case-blue">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <h4 class="text-xl font-bold">MístníMenu</h4>
+          <span class="text-sm text-muted">(LocalMenu)</span>
+          <span class="mvp-badge" style="background:#dbeafe;color:#2563eb" data-i18n="case.menu.badge">8-week MVP</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8">
+          <div>
+            <div class="text-sm font-semibold text-muted uppercase tracking-wide mb-2" data-i18n="case.label.problem">Problem</div>
+            <p class="text-sm mb-4" data-i18n="case.menu.problem">Restaurants do zero marketing. Unmanaged reviews, no social presence, missed customers.</p>
+            <div class="text-sm font-semibold text-muted uppercase tracking-wide mb-2" data-i18n="case.label.product">Product</div>
+            <p class="text-sm mb-4" data-i18n="case.menu.product">Automated marketing suite — reviews, social, campaigns, dashboard.</p>
+            <!-- Mini dashboard -->
+            <div class="flex items-center gap-6 mt-2">
+              <div class="text-center">
+                <div class="text-2xl">⭐</div>
+                <div class="text-xs text-muted mt-1" data-i18n="case.menu.d1">Reviews</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl">📱</div>
+                <div class="text-xs text-muted mt-1" data-i18n="case.menu.d2">Social</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl">📈</div>
+                <div class="text-xs text-muted mt-1" data-i18n="case.menu.d3">Growth</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-muted uppercase tracking-wide mb-2" data-i18n="case.label.team">Team Split</div>
+            <div class="text-sm mb-1"><span class="mr-2">🔨</span><span data-i18n="case.menu.dev">Dev ships integrations</span></div>
+            <div class="text-sm mb-4"><span class="mr-2">🤝</span><span data-i18n="case.menu.sales">Sales demos in Vinohrady</span></div>
+            <div class="text-sm font-semibold text-muted uppercase tracking-wide mb-2" data-i18n="case.label.scale">Scale</div>
+            <p class="font-mono text-sm font-semibold" data-i18n="case.menu.scale">5,000+ restaurants in Prague &middot; 1,000 CZK/month</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: StavbaHub -->
+      <div class="reveal bg-card border border-border rounded-xl p-8 case-amber">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <h4 class="text-xl font-bold">StavbaHub</h4>
+          <span class="text-sm text-muted">(BuildHub)</span>
+          <span class="mvp-badge" style="background:#fef3c7;color:#b45309" data-i18n="case.hub.badge">3-month v1</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8">
+          <div>
+            <div class="text-sm font-semibold text-muted uppercase tracking-wide mb-2" data-i18n="case.label.problem">Problem</div>
+            <p class="text-sm mb-4" data-i18n="case.hub.problem">Property owners can't find reliable renovation contractors. No trust, no transparency, no project tracking.</p>
+            <div class="text-sm font-semibold text-muted uppercase tracking-wide mb-2" data-i18n="case.label.product">Product</div>
+            <p class="text-sm mb-4" data-i18n="case.hub.product">Two-sided marketplace with project management. Owners find contractors, contractors get leads.</p>
+            <!-- Split visual -->
+            <div class="flex gap-3 mt-2">
+              <div class="flex-1 bg-amber-50 rounded-lg p-3 text-center">
+                <div class="text-lg">🏠</div>
+                <div class="text-xs font-medium mt-1" data-i18n="case.hub.owner">Owner</div>
+              </div>
+              <div class="flex items-center text-muted text-lg">⇄</div>
+              <div class="flex-1 bg-amber-50 rounded-lg p-3 text-center">
+                <div class="text-lg">🔧</div>
+                <div class="text-xs font-medium mt-1" data-i18n="case.hub.contractor">Contractor</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-muted uppercase tracking-wide mb-2" data-i18n="case.label.team">Team Split</div>
+            <div class="text-sm mb-1"><span class="mr-2">🔨</span><span data-i18n="case.hub.dev">Dev builds the platform</span></div>
+            <div class="text-sm mb-4"><span class="mr-2">🤝</span><span data-i18n="case.hub.sales">Sales recruits contractors</span></div>
+            <div class="text-sm font-semibold text-muted uppercase tracking-wide mb-2" data-i18n="case.label.scale">Scale</div>
+            <p class="font-mono text-sm font-semibold" data-i18n="case.hub.scale">Prague renovation market &middot; referral fee model</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5C: Partnership Model -->
+    <div class="reveal max-w-5xl mx-auto">
+      <div class="grid md:grid-cols-2 gap-8 mb-10">
+        <div class="bg-card border border-border rounded-xl p-8">
+          <h4 class="text-lg font-bold mb-4" data-i18n="partner.dev.title">Solo Dev + Factory</h4>
+          <ul class="space-y-3 text-sm text-muted">
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5">&#9679;</span><span data-i18n="partner.dev.1">Build MVPs in weeks, not months</span></li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5">&#9679;</span><span data-i18n="partner.dev.2">7 AI agents handle the grunt work</span></li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5">&#9679;</span><span data-i18n="partner.dev.3">Ship and iterate on real feedback</span></li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5">&#9679;</span><span data-i18n="partner.dev.4">Scales to 3-5 products simultaneously</span></li>
+          </ul>
+        </div>
+        <div class="bg-card border border-border rounded-xl p-8">
+          <h4 class="text-lg font-bold mb-4" data-i18n="partner.sales.title">Sales &amp; Operations</h4>
+          <ul class="space-y-3 text-sm text-muted">
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5">&#9679;</span><span data-i18n="partner.sales.1">Find customers in days, not months</span></li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5">&#9679;</span><span data-i18n="partner.sales.2">Local market knowledge and connections</span></li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5">&#9679;</span><span data-i18n="partner.sales.3">Direct feedback loop to the factory</span></li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5">&#9679;</span><span data-i18n="partner.sales.4">Sell across multiple verticals at once</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Closing quote -->
+      <div class="reveal bg-card border-2 border-accent rounded-xl p-8 text-center">
+        <p class="text-base md:text-lg leading-relaxed" data-i18n="partner.quote">One developer with this factory can build 3-5 products simultaneously. One sales person can sell across all of them. The question isn't whether the tech works — it's which problem is worth solving first.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center py-12 text-muted text-sm">
+    <p>The Shipping Factory &middot; 2026</p>
+  </footer>
+
+  <!-- ============================================================ -->
+  <!-- JAVASCRIPT -->
+  <!-- ============================================================ -->
+  <script>
+    // ==========================
+    // TRANSLATIONS
+    // ==========================
+    const translations = {
+      en: {
+        'hero.title': 'The Shipping Factory',
+        'hero.subtitle': 'One person. Seven AI teammates. Shipping like a studio.',
+        'hero.agents': 'Agents',
+        'hero.skills': 'Skills',
+        'hero.projects': 'Projects',
+        'hero.explainer': 'A solo developer workflow where AI agents handle coding, testing, reviewing, and deploying — so one person can ship like a full team.',
+
+        'loop.title': 'The Loop',
+        'loop.subtitle': 'Every feature follows the same six-stage pipeline.',
+        'loop.hill.title': 'How a feature moves through the pipeline',
+        'loop.hill.left': 'Figuring things out',
+        'loop.hill.right': 'Making it happen',
+
+        'pipe.bench.name': 'Bench',
+        'pipe.bench.tag': 'Park the idea',
+        'pipe.bench.prompt': '"Add podcast search filtering"',
+        'pipe.think.name': 'Think',
+        'pipe.think.tag': 'Understand before building',
+        'pipe.think.prompt': '"What if users filter by topic?"',
+        'pipe.shape.name': 'Shape',
+        'pipe.shape.tag': 'Design the rough shape',
+        'pipe.shape.prompt': '"Shape this — 2 hours max"',
+        'pipe.build.name': 'Build',
+        'pipe.build.tag': 'AI agents execute the plan',
+        'pipe.build.prompt': '"Builder writes, tests, commits"',
+        'pipe.verify.name': 'Verify',
+        'pipe.verify.tag': 'Quality gates before shipping',
+        'pipe.verify.prompt': '"Reviewer catches bugs. Screenshots every page."',
+        'pipe.ship.name': 'Ship',
+        'pipe.ship.tag': 'One command to deploy',
+        'pipe.ship.prompt': '"/ship — and it\'s live"',
+
+        'team.title': 'The Team',
+        'team.subtitle': 'Seven specialized AI agents, each with a clear job.',
+        'team.callout': 'Different AI models are good at different things. Like getting a second opinion from a different doctor.',
+        'team.board.title': 'Live Board',
+
+        'agent.orchestrator.name': 'Orchestrator',
+        'agent.orchestrator.role': 'Air traffic control — decides who works on what',
+        'agent.builder.name': 'Builder',
+        'agent.builder.role': 'The coder — writes, tests, commits',
+        'agent.reviewer.name': 'Reviewer',
+        'agent.reviewer.role': 'Quality control — catches bugs before they ship',
+        'agent.researcher.name': 'Researcher',
+        'agent.researcher.role': 'Librarian — finds answers from the web and docs',
+        'agent.reality.name': 'Reality-Checker',
+        'agent.reality.role': 'Fresh eyes — screenshots every page to spot issues',
+        'agent.codex.name': 'Codex Challenger',
+        'agent.codex.role': "Devil's advocate — challenges the code",
+        'agent.gemini.name': 'Gemini Challenger',
+        'agent.gemini.role': "Devil's advocate — challenges the design",
+
+        'board.bench': 'Bench',
+        'board.building': 'Building',
+        'board.review': 'Review',
+        'board.done': 'Done',
+        'board.card.1': 'Dark mode toggle',
+        'board.card.2': 'Email digest feature',
+        'board.card.3': 'Analytics dashboard',
+        'board.card.4': 'Add search filters',
+        'board.card.5': 'Feed pagination',
+        'board.card.6': 'Fix mobile layout',
+        'board.card.7': 'Podcast feed parser',
+        'board.card.8': 'Auth system',
+        'board.card.9': 'RSS integration',
+
+        'output.title': 'The Output',
+        'output.subtitle': 'Five products, one person, one factory.',
+        'output.week.title': 'A Week in the Factory',
+
+        'proj.podnews.desc': 'Podcast news aggregator',
+        'proj.podnews.status': '🟢 Active',
+        'proj.fairy.desc': 'AI stories for kids',
+        'proj.fairy.status': '🟡 MVP in progress',
+        'proj.mountain.desc': 'Mountain guides platform',
+        'proj.mountain.status': '⏳ Queued',
+        'proj.etsy.desc': 'Etsy poster store',
+        'proj.etsy.status': '⏳ Queued',
+        'proj.afrand.desc': 'Ceramics website',
+        'proj.afrand.status': '✅ Completed',
+
+        'week.mon.day': 'Monday',
+        'week.mon.text': 'Bench 3 ideas. Triage backlog. Shape 1 feature for the week.',
+        'week.tue.day': 'Tuesday - Wednesday',
+        'week.tue.text': 'Builder executes the shaped plan. Reviewer catches 2 bugs mid-build.',
+        'week.thu.day': 'Thursday',
+        'week.thu.text': 'Ship v2.1 to production. Retro captures learnings to the vault.',
+        'week.fri.day': 'Friday',
+        'week.fri.text': 'Research next feature. Capture insights to the vault. Bench new ideas.',
+
+        'build.title': 'What Could We Build?',
+        'build.fast.title': 'The Factory Spins Up Fast',
+        'build.fast.step1': 'Define the problem',
+        'build.fast.step2': 'Factory kicks in',
+        'build.fast.step3': 'MVP in weeks',
+        'build.fast.time1': 'Day 1',
+        'build.fast.time2': 'Week 1-2',
+        'build.fast.time3': 'Week 3-4',
+        'build.fast.callout': "The factory isn't tied to any one product. New project = new raw material, same machinery.",
+
+        'case.label.problem': 'Problem',
+        'case.label.product': 'Product',
+        'case.label.team': 'Team Split',
+        'case.label.scale': 'Scale',
+
+        'case.trades.badge': '6-week MVP',
+        'case.trades.problem': 'Trades businesses track jobs on paper and WhatsApp. No pipeline, no follow-ups, lost revenue.',
+        'case.trades.product': 'Mobile-first job pipeline app for tradespeople.',
+        'case.trades.p1': 'Leads',
+        'case.trades.p2': 'Quote',
+        'case.trades.p3': 'Schedule',
+        'case.trades.p4': 'Complete',
+        'case.trades.p5': 'Follow-up',
+        'case.trades.dev': 'Dev builds the app',
+        'case.trades.sales': 'Sales walks into businesses',
+        'case.trades.scale': '15,000+ tradespeople in Prague \u00b7 500 CZK/month',
+
+        'case.menu.badge': '8-week MVP',
+        'case.menu.problem': 'Restaurants do zero marketing. Unmanaged reviews, no social presence, missed customers.',
+        'case.menu.product': 'Automated marketing suite — reviews, social, campaigns, dashboard.',
+        'case.menu.d1': 'Reviews',
+        'case.menu.d2': 'Social',
+        'case.menu.d3': 'Growth',
+        'case.menu.dev': 'Dev ships integrations',
+        'case.menu.sales': 'Sales demos in Vinohrady',
+        'case.menu.scale': '5,000+ restaurants in Prague \u00b7 1,000 CZK/month',
+
+        'case.hub.badge': '3-month v1',
+        'case.hub.problem': "Property owners can't find reliable renovation contractors. No trust, no transparency, no project tracking.",
+        'case.hub.product': 'Two-sided marketplace with project management. Owners find contractors, contractors get leads.',
+        'case.hub.owner': 'Owner',
+        'case.hub.contractor': 'Contractor',
+        'case.hub.dev': 'Dev builds the platform',
+        'case.hub.sales': 'Sales recruits contractors',
+        'case.hub.scale': 'Prague renovation market \u00b7 referral fee model',
+
+        'partner.dev.title': 'Solo Dev + Factory',
+        'partner.dev.1': 'Build MVPs in weeks, not months',
+        'partner.dev.2': '7 AI agents handle the grunt work',
+        'partner.dev.3': 'Ship and iterate on real feedback',
+        'partner.dev.4': 'Scales to 3-5 products simultaneously',
+        'partner.sales.title': 'Sales & Operations',
+        'partner.sales.1': 'Find customers in days, not months',
+        'partner.sales.2': 'Local market knowledge and connections',
+        'partner.sales.3': 'Direct feedback loop to the factory',
+        'partner.sales.4': 'Sell across multiple verticals at once',
+        'partner.quote': "One developer with this factory can build 3-5 products simultaneously. One sales person can sell across all of them. The question isn't whether the tech works — it's which problem is worth solving first.",
+      },
+
+      cz: {
+        'hero.title': 'The Shipping Factory',
+        'hero.subtitle': 'Jeden člověk. Sedm AI spolupracovníků. Dodáváme jako studio.',
+        'hero.agents': 'Agenti',
+        'hero.skills': 'Dovednosti',
+        'hero.projects': 'Projekty',
+        'hero.explainer': 'Pracovní postup pro jednoho vývojáře, kde AI agenti řeší kódování, testování, review a nasazení — takže jeden člověk dodává jako celý tým.',
+
+        'loop.title': 'Smyčka',
+        'loop.subtitle': 'Každá funkce projde stejným šestikrokovým procesem.',
+        'loop.hill.title': 'Jak funkce postupuje procesem',
+        'loop.hill.left': 'Hledání řešení',
+        'loop.hill.right': 'Realizace',
+
+        'pipe.bench.name': 'Zásobník',
+        'pipe.bench.tag': 'Zaparkuj nápad',
+        'pipe.bench.prompt': '"Přidej filtrování podcastů"',
+        'pipe.think.name': 'Myšlení',
+        'pipe.think.tag': 'Porozuměj, než začneš stavět',
+        'pipe.think.prompt': '"Co kdyby uživatelé filtrovali podle tématu?"',
+        'pipe.shape.name': 'Tvarování',
+        'pipe.shape.tag': 'Navrhni hrubý tvar',
+        'pipe.shape.prompt': '"Vytvaruj tohle — max 2 hodiny"',
+        'pipe.build.name': 'Stavba',
+        'pipe.build.tag': 'AI agenti plní plán',
+        'pipe.build.prompt': '"Builder píše, testuje, commituje"',
+        'pipe.verify.name': 'Ověření',
+        'pipe.verify.tag': 'Kontrola kvality před dodáním',
+        'pipe.verify.prompt': '"Reviewer chytá chyby. Screenshotuje každou stránku."',
+        'pipe.ship.name': 'Nasazení',
+        'pipe.ship.tag': 'Jeden příkaz a je to živé',
+        'pipe.ship.prompt': '"/ship — a je to online"',
+
+        'team.title': 'Tým',
+        'team.subtitle': 'Sedm specializovaných AI agentů, každý s jasnou rolí.',
+        'team.callout': 'Různé AI modely jsou dobré v různých věcech. Jako když si necháte poradit od jiného doktora.',
+        'team.board.title': 'Živá nástěnka',
+
+        'agent.orchestrator.name': 'Orchestrátor',
+        'agent.orchestrator.role': 'Řízení letového provozu — rozhoduje, kdo na čem pracuje',
+        'agent.builder.name': 'Builder',
+        'agent.builder.role': 'Kodér — píše, testuje, commituje',
+        'agent.reviewer.name': 'Reviewer',
+        'agent.reviewer.role': 'Kontrola kvality — chytá chyby před nasazením',
+        'agent.researcher.name': 'Researcher',
+        'agent.researcher.role': 'Knihovník — hledá odpovědi na webu a v dokumentaci',
+        'agent.reality.name': 'Reality-Checker',
+        'agent.reality.role': 'Čerstvý pohled — screenshotuje každou stránku',
+        'agent.codex.name': 'Codex Challenger',
+        'agent.codex.role': 'Ďáblův advokát — zpochybňuje kód',
+        'agent.gemini.name': 'Gemini Challenger',
+        'agent.gemini.role': 'Ďáblův advokát — zpochybňuje design',
+
+        'board.bench': 'Zásobník',
+        'board.building': 'Stavba',
+        'board.review': 'Revize',
+        'board.done': 'Hotovo',
+        'board.card.1': 'Přepínač tmavého režimu',
+        'board.card.2': 'E-mailový přehled',
+        'board.card.3': 'Analytický dashboard',
+        'board.card.4': 'Přidat vyhledávací filtry',
+        'board.card.5': 'Stránkování feedu',
+        'board.card.6': 'Opravit mobilní rozložení',
+        'board.card.7': 'Parser podcastového feedu',
+        'board.card.8': 'Autentizační systém',
+        'board.card.9': 'RSS integrace',
+
+        'output.title': 'Výstupy',
+        'output.subtitle': 'Pět produktů, jeden člověk, jedna továrna.',
+        'output.week.title': 'Týden v továrně',
+
+        'proj.podnews.desc': 'Agregátor podcastových zpráv',
+        'proj.podnews.status': '🟢 Aktivní',
+        'proj.fairy.desc': 'AI pohádky pro děti',
+        'proj.fairy.status': '🟡 MVP v procesu',
+        'proj.mountain.desc': 'Platforma horských průvodců',
+        'proj.mountain.status': '⏳ Ve frontě',
+        'proj.etsy.desc': 'Etsy obchod s plakáty',
+        'proj.etsy.status': '⏳ Ve frontě',
+        'proj.afrand.desc': 'Web pro keramiku',
+        'proj.afrand.status': '✅ Dokončeno',
+
+        'week.mon.day': 'Pondělí',
+        'week.mon.text': '3 nápady do zásobníku. Třídění backlogu. Vytvarovat 1 funkci na týden.',
+        'week.tue.day': 'Úterý - Středa',
+        'week.tue.text': 'Builder realizuje plán. Reviewer chytí 2 chyby během stavby.',
+        'week.thu.day': 'Čtvrtek',
+        'week.thu.text': 'Nasadit v2.1 do produkce. Retro zachytí poučení do trezoru.',
+        'week.fri.day': 'Pátek',
+        'week.fri.text': 'Průzkum další funkce. Zachytit poznatky do trezoru. Nové nápady do zásobníku.',
+
+        'build.title': 'Co bychom mohli vytvořit?',
+        'build.fast.title': 'Továrna se rozjede rychle',
+        'build.fast.step1': 'Definuj problém',
+        'build.fast.step2': 'Továrna se zapojí',
+        'build.fast.step3': 'MVP za týdny',
+        'build.fast.time1': 'Den 1',
+        'build.fast.time2': 'Týden 1-2',
+        'build.fast.time3': 'Týden 3-4',
+        'build.fast.callout': 'Továrna není vázaná na jeden produkt. Nový projekt = nová surovina, stejný stroj.',
+
+        'case.label.problem': 'Problém',
+        'case.label.product': 'Produkt',
+        'case.label.team': 'Rozdělení týmu',
+        'case.label.scale': 'Škála',
+
+        'case.trades.badge': 'MVP za 6 týdnů',
+        'case.trades.problem': 'Řemeslníci sledují zakázky na papíře nebo WhatsAppu. Žádný pipeline, žádné follow-upy, ztracené příjmy.',
+        'case.trades.product': 'Mobilní aplikace pro řízení zakázek řemeslníků.',
+        'case.trades.p1': 'Leady',
+        'case.trades.p2': 'Nabídka',
+        'case.trades.p3': 'Plánování',
+        'case.trades.p4': 'Dokončení',
+        'case.trades.p5': 'Follow-up',
+        'case.trades.dev': 'Vývojář staví aplikaci',
+        'case.trades.sales': 'Obchodník chodí do firem',
+        'case.trades.scale': '15 000+ řemeslníků v Praze \u00b7 500 Kč/měsíc',
+
+        'case.menu.badge': 'MVP za 8 týdnů',
+        'case.menu.problem': 'Restaurace nedělají žádný marketing. Neřízené recenze, žádná přítomnost na sociálních sítích.',
+        'case.menu.product': 'Automatizovaný marketingový balíček — recenze, sociální sítě, kampaně, dashboard.',
+        'case.menu.d1': 'Recenze',
+        'case.menu.d2': 'Sociální sítě',
+        'case.menu.d3': 'Růst',
+        'case.menu.dev': 'Vývojář dodá integrace',
+        'case.menu.sales': 'Obchodník předvádí na Vinohradech',
+        'case.menu.scale': '5 000+ restaurací v Praze \u00b7 1 000 Kč/měsíc',
+
+        'case.hub.badge': 'v1 za 3 měsíce',
+        'case.hub.problem': 'Majitelé nemovitostí nemohou najít spolehlivé dodavatele rekonstrukcí. Žádná důvěra, žádná transparentnost.',
+        'case.hub.product': 'Oboustranné tržiště s řízením projektů. Majitelé najdou dodavatele, dodavatelé získají zakázky.',
+        'case.hub.owner': 'Majitel',
+        'case.hub.contractor': 'Dodavatel',
+        'case.hub.dev': 'Vývojář staví platformu',
+        'case.hub.sales': 'Obchodník získává dodavatele',
+        'case.hub.scale': 'Pražský trh rekonstrukcí \u00b7 model provizí',
+
+        'partner.dev.title': 'Solo vývojář + továrna',
+        'partner.dev.1': 'MVP za týdny, ne měsíce',
+        'partner.dev.2': '7 AI agentů zvládne rutinní práci',
+        'partner.dev.3': 'Dodej a iteruj na reálné zpětné vazbě',
+        'partner.dev.4': 'Škáluje se na 3-5 produktů současně',
+        'partner.sales.title': 'Obchod a provoz',
+        'partner.sales.1': 'Zákazníci za dny, ne měsíce',
+        'partner.sales.2': 'Znalost lokálního trhu a kontakty',
+        'partner.sales.3': 'Přímá zpětná vazba do továrny',
+        'partner.sales.4': 'Prodej napříč několika vertikálami najednou',
+        'partner.quote': 'Jeden vývojář s touto továrnou dokáže stavět 3-5 produktů současně. Jeden obchodník je může prodávat všechny. Otázka není, jestli ta technologie funguje — ale který problém stojí za to řešit jako první.',
+      },
+    };
+
+    // ==========================
+    // LANGUAGE SWITCHER
+    // ==========================
+    let currentLang = localStorage.getItem('sf-lang') || 'en';
+
+    function setLang(lang) {
+      currentLang = lang;
+      localStorage.setItem('sf-lang', lang);
+
+      // Update pill
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+      document.getElementById('btn-cz').classList.toggle('active', lang === 'cz');
+
+      // Update all translatable elements
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const val = translations[lang]?.[key];
+        if (val !== undefined) {
+          el.textContent = val;
+        }
+      });
+
+      document.documentElement.lang = lang === 'cz' ? 'cs' : 'en';
+    }
+
+    // ==========================
+    // SCROLL REVEAL (IntersectionObserver)
+    // ==========================
+    function initReveal() {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.05, rootMargin: '0px 0px 60px 0px' }
+      );
+
+      document.querySelectorAll('.reveal').forEach(el => {
+        // Check if element is already in viewport on load
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          el.classList.add('visible');
+        } else {
+          observer.observe(el);
+        }
+      });
+    }
+
+    // ==========================
+    // HILL CHART SVG
+    // ==========================
+    function buildHillChart() {
+      // Generate path: y = 150 - (100 * sin((pi/100)*x - pi/2) + 100) / 2
+      // Mapped to viewbox 0 0 900 300, with padding
+      const points = [];
+      for (let x = 0; x <= 900; x += 3) {
+        // Normalize x to 0-200 range for the sine formula
+        const nx = (x / 900) * 200;
+        const y = 150 - (100 * Math.sin((Math.PI / 100) * nx - Math.PI / 2) + 100) / 2;
+        // Scale y to leave room for labels: map to 50-250
+        const sy = 50 + (y / 200) * 200;
+        points.push(`${x},${sy}`);
+      }
+
+      const pathD = 'M' + points.join(' L');
+      document.getElementById('hillCurve').setAttribute('d', pathD);
+
+      // Place dots along the curve
+      const dotPositions = [
+        { x: 75, name: 'bench' },
+        { x: 225, name: 'think' },
+        { x: 375, name: 'shape' },
+        { x: 525, name: 'build' },
+        { x: 700, name: 'verify' },
+        { x: 825, name: 'ship' },
+      ];
+
+      const svg = document.querySelector('#hillCurve').parentNode;
+      const circles = svg.querySelectorAll('circle');
+      const texts = svg.querySelectorAll('text[data-i18n]');
+
+      dotPositions.forEach((dot, i) => {
+        const nx = (dot.x / 900) * 200;
+        const y = 150 - (100 * Math.sin((Math.PI / 100) * nx - Math.PI / 2) + 100) / 2;
+        const sy = 50 + (y / 200) * 200;
+
+        circles[i].setAttribute('cy', sy);
+        // Label above dot
+        texts[i].setAttribute('y', sy - 16);
+      });
+    }
+
+    // ==========================
+    // INIT
+    // ==========================
+    document.addEventListener('DOMContentLoaded', () => {
+      buildHillChart();
+      initReveal();
+      setLang(currentLang);
+    });
+  </script>
+</body>
+</html>
