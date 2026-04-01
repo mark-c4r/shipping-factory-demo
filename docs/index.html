@@ -119,7 +119,6 @@
 
     /* Stage colors */
     .stage-bench { border-top: 3px solid #f59e0b; }
-    .stage-think { border-top: 3px solid #8b5cf6; }
     .stage-shape { border-top: 3px solid #D97757; }
     .stage-build { border-top: 3px solid #3b82f6; }
     .stage-verify { border-top: 3px solid #10b981; }
@@ -127,7 +126,6 @@
 
     /* Dot colors for hill chart */
     .dot-bench { fill: #f59e0b; }
-    .dot-think { fill: #8b5cf6; }
     .dot-shape { fill: #D97757; }
     .dot-build { fill: #3b82f6; }
     .dot-verify { fill: #10b981; }
@@ -272,7 +270,7 @@
     <div class="reveal text-center mb-16">
       <div class="section-divider mx-auto mb-4"></div>
       <h2 class="text-3xl md:text-4xl font-bold" data-i18n="loop.title">The Loop</h2>
-      <p class="text-muted mt-3 text-lg" data-i18n="loop.subtitle">Every feature follows the same six-stage pipeline.</p>
+      <p class="text-muted mt-3 text-lg" data-i18n="loop.subtitle">Every feature follows the same five-stage pipeline.</p>
     </div>
 
     <div class="reveal max-w-3xl mx-auto mb-12">
@@ -289,16 +287,8 @@
         <div class="chat-bubble" data-i18n="pipe.bench.prompt">"Add podcast search filtering"</div>
       </div>
       <div class="pipeline-connector"></div>
-      <!-- Think -->
-      <div class="reveal reveal-delay-2 bg-card border border-border rounded-xl p-5 stage-think w-full md:w-[160px] flex-shrink-0">
-        <div class="text-2xl mb-2">🧠</div>
-        <div class="font-semibold text-sm" data-i18n="pipe.think.name">Think</div>
-        <div class="text-xs text-muted mt-1" data-i18n="pipe.think.tag">Understand before building</div>
-        <div class="chat-bubble" data-i18n="pipe.think.prompt">"What if users filter by topic?"</div>
-      </div>
-      <div class="pipeline-connector"></div>
       <!-- Shape -->
-      <div class="reveal reveal-delay-3 bg-card border border-border rounded-xl p-5 stage-shape w-full md:w-[160px] flex-shrink-0">
+      <div class="reveal reveal-delay-2 bg-card border border-border rounded-xl p-5 stage-shape w-full md:w-[160px] flex-shrink-0">
         <div class="text-2xl mb-2">✏️</div>
         <div class="font-semibold text-sm" data-i18n="pipe.shape.name">Shape</div>
         <div class="text-xs text-muted mt-1" data-i18n="pipe.shape.tag">Design the rough shape</div>
@@ -306,7 +296,7 @@
       </div>
       <div class="pipeline-connector"></div>
       <!-- Build -->
-      <div class="reveal reveal-delay-4 bg-card border border-border rounded-xl p-5 stage-build w-full md:w-[160px] flex-shrink-0">
+      <div class="reveal reveal-delay-3 bg-card border border-border rounded-xl p-5 stage-build w-full md:w-[160px] flex-shrink-0">
         <div class="text-2xl mb-2">🔨</div>
         <div class="font-semibold text-sm" data-i18n="pipe.build.name">Build</div>
         <div class="text-xs text-muted mt-1" data-i18n="pipe.build.tag">AI agents execute the plan</div>
@@ -314,7 +304,7 @@
       </div>
       <div class="pipeline-connector"></div>
       <!-- Verify -->
-      <div class="reveal reveal-delay-5 bg-card border border-border rounded-xl p-5 stage-verify w-full md:w-[160px] flex-shrink-0">
+      <div class="reveal reveal-delay-4 bg-card border border-border rounded-xl p-5 stage-verify w-full md:w-[160px] flex-shrink-0">
         <div class="text-2xl mb-2">✅</div>
         <div class="font-semibold text-sm" data-i18n="pipe.verify.name">Verify</div>
         <div class="text-xs text-muted mt-1" data-i18n="pipe.verify.tag">Quality gates before shipping</div>
@@ -322,7 +312,7 @@
       </div>
       <div class="pipeline-connector"></div>
       <!-- Ship -->
-      <div class="reveal bg-card border border-border rounded-xl p-5 stage-ship w-full md:w-[160px] flex-shrink-0" style="transition-delay:0.6s">
+      <div class="reveal reveal-delay-5 bg-card border border-border rounded-xl p-5 stage-ship w-full md:w-[160px] flex-shrink-0">
         <div class="text-2xl mb-2">🚀</div>
         <div class="font-semibold text-sm" data-i18n="pipe.ship.name">Ship</div>
         <div class="text-xs text-muted mt-1" data-i18n="pipe.ship.tag">One command to deploy</div>
@@ -345,20 +335,18 @@
         <path id="hillCurve" d="" fill="none" stroke="#D97757" stroke-width="3" stroke-dasharray="8 4" stroke-linecap="round" opacity="0.67" class="hill-path" />
 
         <!-- Dots -->
-        <circle cx="75" cy="0" r="8" class="dot-bench" />
-        <circle cx="225" cy="0" r="8" class="dot-think" />
-        <circle cx="375" cy="0" r="8" class="dot-shape" />
-        <circle cx="525" cy="0" r="8" class="dot-build" />
-        <circle cx="700" cy="0" r="8" class="dot-verify" />
-        <circle cx="825" cy="0" r="8" class="dot-ship" />
+        <circle cx="90" cy="0" r="8" class="dot-bench" />
+        <circle cx="270" cy="0" r="8" class="dot-shape" />
+        <circle cx="500" cy="0" r="8" class="dot-build" />
+        <circle cx="680" cy="0" r="8" class="dot-verify" />
+        <circle cx="810" cy="0" r="8" class="dot-ship" />
 
         <!-- Dot labels -->
-        <text x="75" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.bench.name">Bench</text>
-        <text x="225" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.think.name">Think</text>
-        <text x="375" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.shape.name">Shape</text>
-        <text x="525" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.build.name">Build</text>
-        <text x="700" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.verify.name">Verify</text>
-        <text x="825" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.ship.name">Ship</text>
+        <text x="90" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.bench.name">Bench</text>
+        <text x="270" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.shape.name">Shape</text>
+        <text x="500" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.build.name">Build</text>
+        <text x="680" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.verify.name">Verify</text>
+        <text x="810" y="0" text-anchor="middle" font-size="12" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="pipe.ship.name">Ship</text>
 
         <!-- Footer labels -->
         <text x="225" y="290" text-anchor="middle" font-size="14" font-weight="500" font-family="Inter, sans-serif" fill="#6b6b6b" data-i18n="loop.hill.left">Figuring things out</text>
@@ -788,7 +776,7 @@
         'hero.explainer': 'A solo developer workflow where AI agents handle coding, testing, reviewing, and deploying — so one person can ship like a full team.',
 
         'loop.title': 'The Loop',
-        'loop.subtitle': 'Every feature follows the same six-stage pipeline.',
+        'loop.subtitle': 'Every feature follows the same five-stage pipeline.',
         'loop.hill.title': 'How a feature moves through the pipeline',
         'loop.hill.left': 'Figuring things out',
         'loop.hill.right': 'Making it happen',
@@ -796,9 +784,6 @@
         'pipe.bench.name': 'Bench',
         'pipe.bench.tag': 'Park the idea',
         'pipe.bench.prompt': '"Add podcast search filtering"',
-        'pipe.think.name': 'Think',
-        'pipe.think.tag': 'Understand before building',
-        'pipe.think.prompt': '"What if users filter by topic?"',
         'pipe.shape.name': 'Shape',
         'pipe.shape.tag': 'Design the rough shape',
         'pipe.shape.prompt': '"Shape this — 2 hours max"',
@@ -951,7 +936,7 @@
         'hero.explainer': 'Pracovní postup pro jednoho vývojáře, kde AI agenti řeší kódování, testování, review a nasazení — takže jeden člověk dodává jako celý tým.',
 
         'loop.title': 'Smyčka',
-        'loop.subtitle': 'Každá funkce projde stejným šestikrokovým procesem.',
+        'loop.subtitle': 'Každá funkce projde stejným pětikrokovým procesem.',
         'loop.hill.title': 'Jak funkce postupuje procesem',
         'loop.hill.left': 'Hledání řešení',
         'loop.hill.right': 'Realizace',
@@ -959,9 +944,6 @@
         'pipe.bench.name': 'Zásobník',
         'pipe.bench.tag': 'Zaparkuj nápad',
         'pipe.bench.prompt': '"Přidej filtrování podcastů"',
-        'pipe.think.name': 'Myšlení',
-        'pipe.think.tag': 'Porozuměj, než začneš stavět',
-        'pipe.think.prompt': '"Co kdyby uživatelé filtrovali podle tématu?"',
         'pipe.shape.name': 'Tvarování',
         'pipe.shape.tag': 'Navrhni hrubý tvar',
         'pipe.shape.prompt': '"Vytvaruj tohle — max 2 hodiny"',
@@ -1179,12 +1161,11 @@
 
       // Place dots along the curve
       const dotPositions = [
-        { x: 75, name: 'bench' },
-        { x: 225, name: 'think' },
-        { x: 375, name: 'shape' },
-        { x: 525, name: 'build' },
-        { x: 700, name: 'verify' },
-        { x: 825, name: 'ship' },
+        { x: 90, name: 'bench' },
+        { x: 270, name: 'shape' },
+        { x: 500, name: 'build' },
+        { x: 680, name: 'verify' },
+        { x: 810, name: 'ship' },
       ];
 
       const svg = document.querySelector('#hillCurve').parentNode;
